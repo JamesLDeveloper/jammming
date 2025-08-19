@@ -1,3 +1,7 @@
+ul {
+    list-style-type: none;
+}
+
 .test {
     color: white;
     font-Size: 100;

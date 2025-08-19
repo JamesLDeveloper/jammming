@@ -8,45 +8,34 @@
   background-image: url("./Resources/images/backgrounds/textured-gradient-purple-blue-turquoise-29-09-2024-1727645994-hd-wallpaper.jpg");
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
 
-.App-header {
-/*  background-color: #282c34; */
-/*background-color: #6e1b83;*/
-  background-color: rgb(173, 216, 230, 0.15);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  /*align-items: center; */
- /* justify-content: center; */
-  font-size: calc(4px + 2vmin);
-  color: white;
-  width: 40%;
-  padding: 0;
-}
-
 .App-link {
   color: #61dafb;
 }
 
-.SiteName {
+.siteName {
   color: aquamarine;
   font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   font-size: 100px;
   margin: 50px;
 }
 
-.playlistCreator {
-  width: 40%;
+.playlistSearchAndResultsContainer {
+  width: 30%;
+}
+
+
+.searchBarAndButton {
+  padding: 0;
+}
+
+.playlistUpdaterContainer {
+  width: 30%;
   padding: 0;
   background-color: rgb(173, 216, 230, 0.15);
 }

@@ -3,9 +3,20 @@ import styles from './Tracklist.module.css';
 
 function Tracklist(){
 
+const [tracksInList, setTracksInList] = useState(["Mr Brightside", "Eye of the Tiger"]);
+
+
+const tracksAddedToList = () => {
+    return tracksInList.map((track, index) => (
+        <li key={index}>{track}</li>
+    ))
+};
+
 return (
     <>
-    <div className="Test">Hello Dude!</div>
+    <div>
+    <ul className={styles.test}>{tracksAddedToList()}</ul>
+    </div>
     </>
 )
 };

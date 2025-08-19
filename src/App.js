@@ -8,59 +8,40 @@ import SearchResults from './SearchResults/SearchResults.js';
 import SaveToSpotify from './SaveToSpotify/SaveToSpotify.js';
 import Tracklist from './Tracklist/Tracklist.js';
 import styles from './App.module.css';
+import SpotifyPlaylistFinder from './SpotifyPlaylistFinder/SpotifyPlaylistFinder.js';
+import FoundPlaylist from './FoundPlaylist/Foundplaylist.js';
 
 
 function App() {
   return (
-    <div className={styles.App}>
-      <header className={styles.App-logo}>
-
-        <title className={styles.AppTitle}>Jammming</title>
-
-        <siteName className={styles.SiteName}>Jammming</siteName>
-
-        { /*    <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p> */}
-
-        <div className={styles.SearchBarAndButton}>
-          <div className={styles.SearchBar}>
-            <SearchBar />
+    <>
+      <div className={styles.App}>
+        
+        <div className={styles.titleAndPlaylistFinderContainer}>
+          <div className={styles.App-logo}>
+            <title className={styles.AppTitle}>Jammming</title>
+            <siteName className={styles.siteName}>Jammming</siteName>
+            <SpotifyPlaylistFinder />
+            <FoundPlaylist playlist={["JimmyTwo Shoes", "Tommy Three Hats", "German Spider Walker"]} />
           </div>
         </div>
-
-        <div>
+            
+        <div className={styles.playlistSearchAndResultsContainer}>
+          <div className={styles.searchBarAndButton}>
+            <SearchBar />
+          </div>
+          <div className={styles.searchResults}>
           <SearchResults />
+          </div>
+        </div> 
+        
+        <div className={styles.playlistUpdaterContainer}>
+            <Playlist />
+            <Tracklist />
+            <SaveToSpotify />
         </div>
-
-{/*}
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-*/}
-
-
-
-      </header>
-      
-      
-      <playlistCreator className={styles.playlistCreator}>
-      <a>        
-          <Playlist />
-        </a>
-
-     <div> <Tracklist /> </div> 
-
-      <a> <SaveToSpotify /> </a>
-
-      </playlistCreator>
-    </div>
+      </div>
+    </>
   );
 }
 
