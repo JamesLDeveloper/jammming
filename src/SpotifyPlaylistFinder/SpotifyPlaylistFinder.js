@@ -38,16 +38,17 @@ fetch(`https://api.spotify.com/v1/playlists/${spotifyPlaylistToFind}`, {
 return (
     <>
         <form onSubmit={handleSubmit}>
-        <div classname={styles.playlistFinderContainer}>
-
-            <div className={styles.playlistIdAndTokenId}>
-                <div>Playlist Id</div>
-                <input value={spotifyPlaylistToFind} type="text" className={styles.playlistFinderIdInput} onChange={handleUserPlaylistInput}></input>
-                <div>Token Id</div>
-                <input value={spotifyToken} type="text" className={styles.playlistFinderTokenInput} onChange={handleUserTokenInput}></input>
+            <div className={styles.playlistFinderContainer}>
+                <div className={styles.playlistIdAndTokenId}>
+                    <label htmlFor='PlaylistId'>Playlist Id: </label>
+                    <input name="PlaylistId" id="PlaylistId" value={spotifyPlaylistToFind} type="text" className={styles.playlistFinderIdInput} onChange={handleUserPlaylistInput}></input>
+                    <label htmlFor='TokenId'>Token Id: </label>
+                    <input name="TokenId" id="TokenId" value={spotifyToken} type="text" className={styles.playlistFinderTokenInput} onChange={handleUserTokenInput}></input>
+                </div>
+                <div className={styles.playlistFinderButtonOnly}>
+                    <button className={styles.playlistFinderButton}>Find My Playlist</button>
+                </div>
             </div>
-             <button className={styles.playlistFinderButton}>Find My Playlist</button>
-        </div>
         </form>
     </>
 )

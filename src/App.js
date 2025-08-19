@@ -16,14 +16,15 @@ function App() {
   return (
     <>
       <div className={styles.App}>
-        
+        <title className={styles.AppTitle}>Jammming</title>
         <div className={styles.titleAndPlaylistFinderContainer}>
-          <div className={styles.App-logo}>
-            <title className={styles.AppTitle}>Jammming</title>
-            <siteName className={styles.siteName}>Jammming</siteName>
-            <SpotifyPlaylistFinder />
-            <FoundPlaylist playlist={["JimmyTwo Shoes", "Tommy Three Hats", "German Spider Walker"]} />
-          </div>
+            <div className={styles.siteName}>Jammming</div>
+            <div className={styles.spotifyPlaylistFinderContainer}>
+              <SpotifyPlaylistFinder />
+            </div>
+            <div className={styles.foundPlaylistContainer}>
+              <FoundPlaylist playlist={["JimmyTwo Shoes", "Tommy Three Hats", "German Spider Walker"]} />
+            </div>
         </div>
             
         <div className={styles.playlistSearchAndResultsContainer}>
