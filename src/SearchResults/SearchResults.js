@@ -1,6 +1,5 @@
 import React, {useState} from "react";
-
-
+import styles from './SearchResults.module.css';
 
 function SearchBarInput(){
     const [searchBarInput, setSearchBarInput] = useState ("");
@@ -27,8 +26,8 @@ function SearchResults() {
 
     return (
         <div>
-            <h1 className="SearchResultsHeading">Results containing {}</h1>
-            <div className="SearchResultItems">{}</div>
+            <h1 className={styles.SearchResultsHeading}>Results containing {}</h1>
+            <div className={styles.SearchResultItems}>{}</div>
         </div>
     );
 };

@@ -1,10 +1,10 @@
 import React from 'react';
-import './SaveToSpotify.css';
+import styles from './SaveToSpotify.module.css';
 
 function SaveToSpotify(){
     return (
         <>
-        <button className="SavePlaylistToSpotify">Save to Spotify</button>        
+        <button className={styles.SavePlaylistToSpotify}>Save to Spotify</button>        
         </>
     );
 };

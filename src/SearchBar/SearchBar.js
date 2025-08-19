@@ -1,12 +1,12 @@
 import React from "react";
-import './SearchBar.css';
+import styles from './SearchBar.module.css';
 
 
 function SearchBar(){
     return (
-        <div classname="SearchBarAndButtonContainer">
-        <input className="SearchTextInputBox">{}</input>
-        <button className="SearchButton">Search</button>
+        <div classname={styles.SearchBarAndButtonContainer}>
+        <input className={styles.SearchTextInputBox}>{}</input>
+        <button className={styles.SearchButton}>Search</button>
         </div>
     );
 };
