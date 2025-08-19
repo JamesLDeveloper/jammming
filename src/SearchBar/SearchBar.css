@@ -1,0 +1,17 @@
+.SearchBarAndButtonContainer {
+display: flex;
+flex-direction: column;
+width: 100%;
+}
+
+
+.SearchTextInputBox {
+    font-size: 40px;
+    width: 60%;
+}
+
+.SearchButton {
+    font-size: 40px;
+    width: 30%;
+    overflow: hidden;
+    }
