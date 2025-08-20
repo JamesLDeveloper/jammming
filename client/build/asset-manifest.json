@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "./static/css/main.b93f88f6.css",
+    "main.js": "./static/js/main.5262d532.js",
+    "static/js/714.2b8cde53.chunk.js": "./static/js/714.2b8cde53.chunk.js",
+    "static/media/textured-gradient-purple-blue-turquoise-29-09-2024-1727645994-hd-wallpaper.jpg": "./static/media/textured-gradient-purple-blue-turquoise-29-09-2024-1727645994-hd-wallpaper.0669026ddd7e01e24b15.jpg",
+    "static/media/logo.svg": "./static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "./index.html",
+    "main.b93f88f6.css.map": "./static/css/main.b93f88f6.css.map",
+    "main.5262d532.js.map": "./static/js/main.5262d532.js.map",
+    "714.2b8cde53.chunk.js.map": "./static/js/714.2b8cde53.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b93f88f6.css",
+    "static/js/main.5262d532.js"
+  ]
+}
