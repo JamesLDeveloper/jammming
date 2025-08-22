@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import ReactDOM from 'react-dom';
 //import './SearchButton/SearchButton.js';
 import SearchBar from './SearchBar/SearchBar.js';
@@ -10,6 +9,7 @@ import Tracklist from './Tracklist/Tracklist.js';
 import styles from './App.module.css';
 import SpotifyPlaylistFinder from './SpotifyPlaylistFinder/SpotifyPlaylistFinder.js';
 import FoundPlaylist from './FoundPlaylist/Foundplaylist.js';
+import UserPlaylists from './UserPlaylists/UserPlaylists.js';
 
 
 function App() {
@@ -19,6 +19,9 @@ function App() {
         <title className={styles.AppTitle}>Jammming</title>
         <div className={styles.titleAndPlaylistFinderContainer}>
             <div className={styles.siteName}>Jammming</div>
+            <div className={styles.displayUserPlaylistsContainer}>
+                <UserPlaylists />
+            </div>
             <div className={styles.spotifyPlaylistFinderContainer}>
               <SpotifyPlaylistFinder />
             </div>
