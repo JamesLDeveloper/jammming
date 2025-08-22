@@ -5,18 +5,19 @@ import styles from './UserPlaylists.module.css';
 
 function UserPlaylists () {
 
-const [usersPlaylists, setUsersPlaylists] = useState ("No playlists found");
+const [usersPlaylists, setUsersPlaylists] = useState (["No playlists found"]);
 
-    useEffect (() => {
+/*    useEffect (() => {
             setUsersPlaylists(["tim", "sarah"]);
         } , []);
-
+*/
 const displayUsersPlaylists = () => {
 
 return usersPlaylists.map((playlist, index) => (
     <li key={index}>{playlist}</li>
 )) 
 };
+
 
 return (
 <>
