@@ -19,8 +19,8 @@ function App() {
         <title className={styles.AppTitle}>Jammming</title>
         <div className={styles.titleAndPlaylistFinderContainer}>
             <div className={styles.siteName}>Jammming</div>
-            <div className={styles.displayUserPlaylistsContainer}>
-                <UserPlaylists />
+           <div className={styles.displayUserPlaylistsContainer}>
+               {/* <UserPlaylists /> */}
             </div>
             <div className={styles.spotifyPlaylistFinderContainer}>
               <SpotifyPlaylistFinder />

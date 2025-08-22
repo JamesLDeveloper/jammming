@@ -1,81 +1,78 @@
 import React, {useState, useEffect} from 'react';
 import styles from './SpotifyPlaylistFinder.module.css';
+import { useFormState } from 'react-dom';
 
 function SpotifyPlaylistFinder (){
 
-const [spotifyPlaylistToFind, setSpotifyPlaylistToFind] = useState("");
-const [spotifyToken, setSpotifyToken] = useState("");
-const [retrievedPlaylist, setRetrievedPlaylist] = useState([]);
+//const [spotifyPlaylistToFind, setSpotifyPlaylistToFind] = useState("");
+//const [spotifyToken, setSpotifyToken] = useState("");
+const [accessToken, setAccessToken] = useState("");
+const [userProfile, setUserProfile] = useState(null);
+const [retrievedPlaylists, setRetrievedPlaylists] = useState([]);
 
-useEffect(() => {
+/*useEffect(() => {
     fetch('/token')
     .then(res => res.json())
     .then(data => {setSpotifyToken(data.token);})
     .catch(err => {console.error('Error fetching token:', err);});
     }, []);
+    */
 
-const handleUserPlaylistInput = (e) => {
-    return setSpotifyPlaylistToFind(e.target.value);
-}
+useEffect (() => {
+    const query = new URLSearchParams(window.location.search);
+    const tokenFromUrl = query.get("access_token");
 
-/*const handleUserTokenInput = (e) => {
-    return setSpotifyToken(e.target.value);
-}*/
-
-const handleSubmit = (e) => {
-e.preventDefault();
-
-alert(`Searching for Spotify Playlist Id: ${spotifyPlaylistToFind}`);
-
-fetch(`https://api.spotify.com/v1/playlists/${spotifyPlaylistToFind}`, {
-            headers: {
-                Authorization: `Bearer ${spotifyToken}`
-            }
-        }
-        )
-        .then(response => {
-    if (response.status === 401) {
-      // Token is invalid or expired
-      alert('Bearer token was rejected by Spotify. Please refresh or check your credentials.');
-      throw new Error('Unauthorized: Invalid or expired token');
-    } else if (response.status === 403) {
-      // Token is valid but lacks permission
-      alert('Bearer token was accepted, but access to this playlist is forbidden.');
-      throw new Error('Forbidden: Token lacks permission');
-    } else if (!response.ok) {
-      // Other errors (e.g. playlist not found)
-      alert('No playlist found or another error occurred.');
-      throw new Error(`HTTP error! status: ${response.status}`);
-    } else {
-      // Token accepted and playlist found
-      alert('Bearer token accepted. Fetching playlist...');
-      return response.json();
+    if (tokenFromUrl) {
+        setAccessToken(tokenFromUrl);
+        window.history.replaceState(null, "", window.location.pathname);
     }
-  })
-        .then(json => setRetrievedPlaylist(json))
-        .catch(error => console.error(`Fetch error` ,error));
-};
+}, []);
 
+useEffect(() => {
+    if(!accessToken) return;
+
+    fetch("https://api.spotify.com/v1/me", {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    })
+    .then((res) => res.json())
+    .then((data) => setUserProfile(data))
+    .then(() => fetchPlaylists())
+    .catch((err) => console.error("Error fetching profile: ", err));
+}, [accessToken]);
+
+  const fetchPlaylists = () => {
+    fetch("https://api.spotify.com/v1/me/playlists", {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    })
+      .then((res) => res.json())
+      .then((data) => setRetrievedPlaylists(data.items || []))
+      .catch((err) => console.error("Error fetching playlists:", err));
+  };
+
+  if (!accessToken) {
+    return (
+      <div className={styles.playlistFinderContainer}>
+        <p>Please log in to Spotify first:</p>
+        <a href="http://127.0.0.1:5000/login">
+          <button className={styles.playlistFinderButton}>Login with Spotify</button>
+        </a>
+      </div>
+    );
+  } else {
 
 return (
-    <>
-        <form onSubmit={handleSubmit}>
-            <div className={styles.playlistFinderContainer}>
-                <div className={styles.playlistIdAndTokenId}>
-                    <label htmlFor='PlaylistId'>Playlist Id: </label>
-                    <input name="PlaylistId" id="PlaylistId" value={spotifyPlaylistToFind} type="text" className={styles.playlistFinderIdInput} onChange={handleUserPlaylistInput}></input>
-                   {/* <label htmlFor='TokenId'>Token Id: </label>
-                    <input name="TokenId" id="TokenId" value={spotifyToken} type="text" className={styles.playlistFinderTokenInput} onChange={handleUserTokenInput}></input>*/ }
-                </div>
-                <div className={styles.playlistFinderButtonOnly}>
-                    <button className={styles.playlistFinderButton}>Find My Playlist</button>
-                </div>
-            </div>
-        </form>
-    </>
-)
-
-
+<>
+    <div>
+        <h2>My Playlists</h2>
+        <ul>
+        {retrievedPlaylists.map((playlist) => (
+            <li key={playlist.id}>{playlist.name}</li>
+        ))}
+        </ul>
+    </div>
+</>
+);
+  }
 }
 
 export default SpotifyPlaylistFinder;
