@@ -25,9 +25,6 @@ function App() {
             <div className={styles.spotifyPlaylistFinderContainer}>
               <SpotifyPlaylistFinder />
             </div>
-            <div className={styles.foundPlaylistContainer}>
-              <FoundPlaylist playlist={["JimmyTwo Shoes", "Tommy Three Hats", "German Spider Walker"]} />
-            </div>
         </div>
             
         <div className={styles.playlistSearchAndResultsContainer}>

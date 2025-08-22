@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import styles from './SpotifyPlaylistFinder.module.css';
 import { useFormState } from 'react-dom';
+import TracklistToUpdate from '../TracklistToUpdate/TracklistToUpdate.js';
+import { data } from 'browserslist';
 
 function SpotifyPlaylistFinder (){
 
@@ -9,6 +11,12 @@ function SpotifyPlaylistFinder (){
 const [accessToken, setAccessToken] = useState("");
 const [userProfile, setUserProfile] = useState(null);
 const [retrievedPlaylists, setRetrievedPlaylists] = useState([]);
+const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
+const [playlistObect, setPlaylistObject] = useState({});
+const [trackItemsInListToUpdate, setTrackItemsInListToUpdate] = useState(["When you were young", "In the End"]);
+const [trackNames, setTrackNames] = useState([]);
+
+
 
 /*useEffect(() => {
     fetch('/token')
@@ -40,6 +48,24 @@ useEffect(() => {
     .catch((err) => console.error("Error fetching profile: ", err));
 }, [accessToken]);
 
+    const selectPlaylist = (playlistId) => {
+        setSelectedPlaylistId(playlistId);
+        alert(`Selected Playlist = ${selectedPlaylistId}`);
+        fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    })
+    .then((res) => res.json())
+    .then((data) => {
+       setPlaylistObject(data);
+        setTrackItemsInListToUpdate(data.tracks.items || []);
+        setTrackNames((data.tracks.items || []).map(item => item.track.name));
+    })
+    .catch((err) => console.error(`Error fetching playlist`, err));
+    alert(JSON.stringify(data, null, 2));
+    };
+        
+
+
   const fetchPlaylists = () => {
     fetch("https://api.spotify.com/v1/me/playlists", {
       headers: { Authorization: `Bearer ${accessToken}` }
@@ -66,9 +92,24 @@ return (
         <h2>My Playlists</h2>
         <ul>
         {retrievedPlaylists.map((playlist) => (
-            <li key={playlist.id}>{playlist.name}</li>
+            <li key={playlist.id} onClick={() => selectPlaylist(playlist.id)}>{playlist.name} : {playlist.id}</li>
         ))}
         </ul>
+
+        <div className={styles.tracklistContainer}>
+            <TracklistToUpdate trackNames={trackNames} accessToken={accessToken}/>
+        </div>
+
+        <button className={styles.playlistFinderButton} 
+            onClick={() => {
+                localStorage.removeItem("spotify_access_token");
+                setAccessToken("");
+                setUserProfile(null);
+                setRetrievedPlaylists([]);
+            }}>
+                Logout
+        </button>
+        
     </div>
 </>
 );
