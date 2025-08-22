@@ -1,0 +1,29 @@
+.playlistFinderContainer {
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.playlistFinderIdInput {
+    width: 100%;
+}
+
+.playlistFinderTokenInput {
+    width: 100%;
+}
+
+.playlistIdAndTokenId {
+    width: 40%;
+    color: white;
+}
+
+.playlistFinderButtonOnly {
+    width: 40%;
+    padding: 0;
+}
+
+.playlistFinderButton{
+    font-size: 2.5rem;
+}

@@ -1,0 +1,52 @@
+.App {
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 100vw;
+  background-image: url("./Resources/images/backgrounds/textured-gradient-purple-blue-turquoise-29-09-2024-1727645994-hd-wallpaper.jpg");
+  padding: 2rem;
+}
+
+.titleAndPlaylistFinderContainer {
+    width: 30%;
+    padding: 0;
+    background-color: rgb(173, 216, 230, 0.15);
+}
+
+.siteName {
+  color: aquamarine;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: 100px;
+  background-color: black;
+  padding: 1rem;
+}
+
+.displayUserPlaylistsContainer {
+  padding: 1rem;
+}
+
+.spotifyPlaylistFinderContainer {
+  padding: 1rem;
+}
+
+.foundPlaylistContainer {
+  padding: 1rem;
+}
+
+.playlistSearchAndResultsContainer {
+  width: 30%;
+  padding: 1rem;
+      background-color: rgb(173, 216, 230, 0.15);
+}
+
+.searchBarAndButton {
+  padding: 0;
+}
+
+.playlistUpdaterContainer {
+  width: 30%;
+  padding: 0;
+  background-color: rgb(173, 216, 230, 0.15);
+}
