@@ -4,11 +4,11 @@ import { useFormState } from 'react-dom';
 import TracklistToUpdate from '../TracklistToUpdate/TracklistToUpdate.js';
 import { data } from 'browserslist';
 
-function SpotifyPlaylistFinder (){
+function SpotifyPlaylistFinder ({accessToken}){
 
 //const [spotifyPlaylistToFind, setSpotifyPlaylistToFind] = useState("");
 //const [spotifyToken, setSpotifyToken] = useState("");
-const [accessToken, setAccessToken] = useState("");
+//const [accessToken, setAccessToken] = useState("");
 const [userProfile, setUserProfile] = useState(null);
 const [retrievedPlaylists, setRetrievedPlaylists] = useState([]);
 const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
@@ -25,6 +25,8 @@ const [trackNames, setTrackNames] = useState([]);
     .catch(err => {console.error('Error fetching token:', err);});
     }, []);
     */
+
+/*
 
 useEffect (() => {
     const query = new URLSearchParams(window.location.search);
@@ -48,6 +50,17 @@ useEffect(() => {
     .catch((err) => console.error("Error fetching profile: ", err));
 }, [accessToken]);
 
+*/
+
+useEffect (() => {
+    fetch("https://api.spotify.com/v1/me/playlists", {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    })
+      .then((res) => res.json())
+      .then((data) => setRetrievedPlaylists(data.items || []))
+      .catch((err) => console.error("Error fetching playlists:", err));
+})
+
     const selectPlaylist = (playlistId) => {
         setSelectedPlaylistId(playlistId);
         alert(`Selected Playlist = ${selectedPlaylistId}`);
@@ -59,23 +72,24 @@ useEffect(() => {
        setPlaylistObject(data);
         setTrackItemsInListToUpdate(data.tracks.items || []);
         setTrackNames((data.tracks.items || []).map(item => item.track.name));
+        alert(JSON.stringify(data.tracks.items, null, 2));
     })
     .catch((err) => console.error(`Error fetching playlist`, err));
-    alert(JSON.stringify(data, null, 2));
+
     };
         
 
 
-  const fetchPlaylists = () => {
+  /*const fetchPlaylists = () => {
     fetch("https://api.spotify.com/v1/me/playlists", {
       headers: { Authorization: `Bearer ${accessToken}` }
     })
       .then((res) => res.json())
       .then((data) => setRetrievedPlaylists(data.items || []))
       .catch((err) => console.error("Error fetching playlists:", err));
-  };
+  };*/
 
-  if (!accessToken) {
+  /*if (!accessToken) {
     return (
       <div className={styles.playlistFinderContainer}>
         <p>Please log in to Spotify first:</p>
@@ -84,7 +98,7 @@ useEffect(() => {
         </a>
       </div>
     );
-  } else {
+  } else*/ {
 
 return (
 <>
@@ -100,15 +114,7 @@ return (
             <TracklistToUpdate trackNames={trackNames} accessToken={accessToken}/>
         </div>
 
-        <button className={styles.playlistFinderButton} 
-            onClick={() => {
-                localStorage.removeItem("spotify_access_token");
-                setAccessToken("");
-                setUserProfile(null);
-                setRetrievedPlaylists([]);
-            }}>
-                Logout
-        </button>
+
         
     </div>
 </>
