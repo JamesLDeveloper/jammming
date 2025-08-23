@@ -113,11 +113,9 @@ const toggleSpotifyPlaylistFinder = () => {
             
         <div className={styles.playlistSearchAndResultsContainer}>
           <div className={styles.searchBarAndButton}>
-            <SearchBar />
+            <SearchBar accessToken={accessToken}/>
           </div>
-          <div className={styles.searchResults}>
-          <SearchResults />
-          </div>
+
         </div> 
         
         <div className={styles.playlistUpdaterContainer}>

@@ -1,50 +1,47 @@
 import React, { useEffect, useState } from "react";
 import styles from './SearchBar.module.css';
-import Tracklist from "../Tracklist/Tracklist";
+import SearchResults from "../SearchResults/SearchResults";
 
-
-function SearchBar(){
-
+function SearchBar({accessToken}){
 
     const [searchBarUserInput, setSearchBarUserInput] = useState("");
     const [searchResults, setSearchResults] = useState("");
 
-    const [retrievedPlaylist, setRetrievedPlaylist] = useState([]);
-
-    const playlist_id = "3845658339"
-    const token = "asklfalgfakljfgal;sdkaSDLK;"
-/*
-    useEffect(() => {
-        fetch(`https://api.spotify.com/v1/playlists/${playlist_id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-        )
-        .then(response => {
-            if(!response.ok) {
-                throw new Error(`HTTP error! status: ${response.error}`);
-            } return response.json()
-        } )
-        .then(json => setRetrievedPlaylist(json))
-        .catch(error => console.error(`Fetch error` ,error));
-    }, [playlist_id]);
-*/
     const handleUserInput = (e) => {
         setSearchBarUserInput(e.target.value);    
     };
 
     const handleSubmit = (e) => {
-        return alert(`Searching for ${searchBarUserInput}`);
+        e.preventDefault();
+        alert(`Searching for ${searchBarUserInput}`);
+
+        fetch(`https://api.spotify.com/v1/search/?q=track:${encodeURIComponent(searchBarUserInput)}&type=track&limit=10&offset=0`, {
+            headers: {Authorization : `Bearer ${accessToken}`},
+        })
+        .then(response => {
+            if(!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status} ${response.statusText}`);
+            } return response.json()
+        } )
+        .then((json) => {
+            setSearchResults(json);
+            console.log("Search results:", json);
+        })
+        .catch(error => console.error(`Fetch error` ,error));
     }
 
     return (
+        <>
         <form onSubmit={handleSubmit}>
         <div className={styles.SearchBarAndButtonContainer}>
         <input value={searchBarUserInput} type="text" className={styles.SearchTextInputBox} onChange={handleUserInput}></input>
         <button className={styles.SearchButton}>Search</button>
         </div>
         </form>
+                  <div className={styles.searchResults}>
+          <SearchResults searchBarUserInput={searchBarUserInput} searchResults={searchResults}/>
+          </div>
+          </>
     );
 };
 
