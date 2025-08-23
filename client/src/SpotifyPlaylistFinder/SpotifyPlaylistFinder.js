@@ -6,9 +6,8 @@ import { data } from 'browserslist';
 
 function SpotifyPlaylistFinder ({accessToken}){
 
-//const [spotifyPlaylistToFind, setSpotifyPlaylistToFind] = useState("");
-//const [spotifyToken, setSpotifyToken] = useState("");
-//const [accessToken, setAccessToken] = useState("");
+console.log("SpotifyPlaylistFinder received accessToken:", accessToken);
+
 const [userProfile, setUserProfile] = useState(null);
 const [retrievedPlaylists, setRetrievedPlaylists] = useState([]);
 const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
@@ -16,94 +15,100 @@ const [playlistObect, setPlaylistObject] = useState({});
 const [trackItemsInListToUpdate, setTrackItemsInListToUpdate] = useState(["When you were young", "In the End"]);
 const [trackNames, setTrackNames] = useState([]);
 
-
-
-/*useEffect(() => {
-    fetch('/token')
-    .then(res => res.json())
-    .then(data => {setSpotifyToken(data.token);})
-    .catch(err => {console.error('Error fetching token:', err);});
-    }, []);
-    */
-
-/*
-
-useEffect (() => {
-    const query = new URLSearchParams(window.location.search);
-    const tokenFromUrl = query.get("access_token");
-
-    if (tokenFromUrl) {
-        setAccessToken(tokenFromUrl);
-        window.history.replaceState(null, "", window.location.pathname);
-    }
+useEffect(() => {
+  console.log("SpotifyPlaylistFinder mounted");
+  return () => console.log("SpotifyPlaylistFinder unmounted");
 }, []);
 
+
+
+
+const fetchPlaylists = (cancelledRef) => {
+  fetch(`https://api.spotify.com/v1/me/playlists`, {
+    headers: {Authorization : `Bearer ${accessToken}`},
+  })
+  .then (async (res) => {
+    if (res.status === 429) {
+      const retryAfter = res.headers.get("Retry-After") || 5;
+      console.warn(`Rate limited. Retrying after ${retryAfter}s`);
+      setTimeout (() => {
+        if (!cancelledRef.cancelled) fetchPlaylists(cancelledRef);
+      }, retryAfter * 1000);
+      return null;
+    }
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    return res.json();
+  }) 
+  .then((data) => {
+    if (data) {
+      console.log("Fetched playlists", data);
+      setRetrievedPlaylists(data.items || []);
+    }
+  })
+  .catch((err) => {
+    if (!cancelledRef.cancelled) {
+    console.error("Error fetching playlists:", err);
+    }
+  });
+  }
+
 useEffect(() => {
-    if(!accessToken) return;
+  if (!accessToken) {
+    setRetrievedPlaylists([]);  // clear playlists on logout
+    return;
+  }
+  const cancelledRef = { cancelled : false };
+  const timer = setTimeout(() => fetchPlaylists(cancelledRef), 500);
+  return () => {
+    cancelledRef.cancelled = true;
+    clearTimeout(timer);
+  };
+  }, [accessToken]);
 
-    fetch("https://api.spotify.com/v1/me", {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    })
-    .then((res) => res.json())
-    .then((data) => setUserProfile(data))
-    .then(() => fetchPlaylists())
-    .catch((err) => console.error("Error fetching profile: ", err));
-}, [accessToken]);
-
-*/
-
-useEffect (() => {
-    fetch("https://api.spotify.com/v1/me/playlists", {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    })
-      .then((res) => res.json())
-      .then((data) => setRetrievedPlaylists(data.items || []))
-      .catch((err) => console.error("Error fetching playlists:", err));
-})
 
     const selectPlaylist = (playlistId) => {
         setSelectedPlaylistId(playlistId);
-        alert(`Selected Playlist = ${selectedPlaylistId}`);
+        console.log(`Selected Playlist = ${playlistId}`);
+
+      const fetchPlaylistDetails = () => {
         fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-    })
-    .then((res) => res.json())
+        headers: { Authorization: `Bearer ${accessToken}` },
+
+      })
+      .then(async (res) => {
+        if(res.status === 429) {
+          const retryAfter = res.headers.get("Retry-After") || 5;
+          console.warn(`Rate limited (playlist fectch). Retrying after ${retryAfter}s`);
+            setTimeout(fetchPlaylistDetails, retryAfter * 1000);
+            return null;
+        }
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        return res.json();
+
+      })
     .then((data) => {
+      if (data) {
        setPlaylistObject(data);
         setTrackItemsInListToUpdate(data.tracks.items || []);
         setTrackNames((data.tracks.items || []).map(item => item.track.name));
-        alert(JSON.stringify(data.tracks.items, null, 2));
+        console.log(JSON.stringify(data.tracks.items, null, 2));
+      }
     })
     .catch((err) => console.error(`Error fetching playlist`, err));
-
     };
-        
+    fetchPlaylistDetails();
+  };
 
+      const handlePlaylistInfo = () => {
+      console.log(`Your playlists ${JSON.stringify(retrievedPlaylists, null, 2)}`);
+      };
 
-  /*const fetchPlaylists = () => {
-    fetch("https://api.spotify.com/v1/me/playlists", {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    })
-      .then((res) => res.json())
-      .then((data) => setRetrievedPlaylists(data.items || []))
-      .catch((err) => console.error("Error fetching playlists:", err));
-  };*/
-
-  /*if (!accessToken) {
-    return (
-      <div className={styles.playlistFinderContainer}>
-        <p>Please log in to Spotify first:</p>
-        <a href="http://127.0.0.1:5000/login">
-          <button className={styles.playlistFinderButton}>Login with Spotify</button>
-        </a>
-      </div>
-    );
-  } else*/ {
+{
 
 return (
 <>
     <div>
-        <h2>My Playlists</h2>
+        <h2 onClick={handlePlaylistInfo}>My Playlists</h2>
         <ul>
         {retrievedPlaylists.map((playlist) => (
             <li key={playlist.id} onClick={() => selectPlaylist(playlist.id)}>{playlist.name} : {playlist.id}</li>

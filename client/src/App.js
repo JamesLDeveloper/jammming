@@ -40,11 +40,13 @@ useEffect(() => {
     .catch((err) => console.error("Error fetching profile: ", err));
 }, [accessToken]);
 
-  useEffect(() => {
+/* useEffect(() => {
       if (accessToken) {
          toggleSpotifyPlaylistFinder();
       }
   }, [accessToken])
+
+*/
 
  const loginRequired = () => {
   if (!accessToken) {
