@@ -1,81 +1,133 @@
 import React, {useState, useEffect} from 'react';
 import styles from './SpotifyPlaylistFinder.module.css';
+import { useFormState } from 'react-dom';
+import TracklistToUpdate from '../TracklistToUpdate/TracklistToUpdate.js';
+import { data } from 'browserslist';
 
-function SpotifyPlaylistFinder (){
+function SpotifyPlaylistFinder ({accessToken, onSelectedPlaylist, onExistingTracksChange}){
 
-const [spotifyPlaylistToFind, setSpotifyPlaylistToFind] = useState("");
-const [spotifyToken, setSpotifyToken] = useState("");
-const [retrievedPlaylist, setRetrievedPlaylist] = useState([]);
+console.log("SpotifyPlaylistFinder received accessToken:", accessToken);
+
+const [userProfile, setUserProfile] = useState(null);
+const [retrievedPlaylists, setRetrievedPlaylists] = useState([]);
+const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
+const [playlistObect, setPlaylistObject] = useState({});
+const [trackItemsInListToUpdate, setTrackItemsInListToUpdate] = useState(["When you were young", "In the End"]);
+const [trackNames, setTrackNames] = useState([]);
 
 useEffect(() => {
-    fetch('/token')
-    .then(res => res.json())
-    .then(data => {setSpotifyToken(data.token);})
-    .catch(err => {console.error('Error fetching token:', err);});
-    }, []);
+  console.log("SpotifyPlaylistFinder mounted");
+  return () => console.log("SpotifyPlaylistFinder unmounted");
+}, []);
 
-const handleUserPlaylistInput = (e) => {
-    return setSpotifyPlaylistToFind(e.target.value);
-}
 
-/*const handleUserTokenInput = (e) => {
-    return setSpotifyToken(e.target.value);
-}*/
 
-const handleSubmit = (e) => {
-e.preventDefault();
 
-alert(`Searching for Spotify Playlist Id: ${spotifyPlaylistToFind}`);
-
-fetch(`https://api.spotify.com/v1/playlists/${spotifyPlaylistToFind}`, {
-            headers: {
-                Authorization: `Bearer ${spotifyToken}`
-            }
-        }
-        )
-        .then(response => {
-    if (response.status === 401) {
-      // Token is invalid or expired
-      alert('Bearer token was rejected by Spotify. Please refresh or check your credentials.');
-      throw new Error('Unauthorized: Invalid or expired token');
-    } else if (response.status === 403) {
-      // Token is valid but lacks permission
-      alert('Bearer token was accepted, but access to this playlist is forbidden.');
-      throw new Error('Forbidden: Token lacks permission');
-    } else if (!response.ok) {
-      // Other errors (e.g. playlist not found)
-      alert('No playlist found or another error occurred.');
-      throw new Error(`HTTP error! status: ${response.status}`);
-    } else {
-      // Token accepted and playlist found
-      alert('Bearer token accepted. Fetching playlist...');
-      return response.json();
+const fetchPlaylists = (cancelledRef) => {
+  fetch(`https://api.spotify.com/v1/me/playlists`, {
+    headers: {Authorization : `Bearer ${accessToken}`},
+  })
+  .then (async (res) => {
+    if (res.status === 429) {
+      const retryAfter = res.headers.get("Retry-After") || 5;
+      console.warn(`Rate limited. Retrying after ${retryAfter}s`);
+      setTimeout (() => {
+        if (!cancelledRef.cancelled) fetchPlaylists(cancelledRef);
+      }, retryAfter * 1000);
+      return null;
+    }
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    return res.json();
+  }) 
+  .then((data) => {
+    if (data) {
+      console.log("Fetched playlists", data);
+      setRetrievedPlaylists(data.items || []);
     }
   })
-        .then(json => setRetrievedPlaylist(json))
-        .catch(error => console.error(`Fetch error` ,error));
-};
+  .catch((err) => {
+    if (!cancelledRef.cancelled) {
+    console.error("Error fetching playlists:", err);
+    }
+  });
+  }
 
+useEffect(() => {
+  if (!accessToken) {
+    setRetrievedPlaylists([]);  // clear playlists on logout
+    return;
+  }
+  const cancelledRef = { cancelled : false };
+  const timer = setTimeout(() => fetchPlaylists(cancelledRef), 500);
+  return () => {
+    cancelledRef.cancelled = true;
+    clearTimeout(timer);
+  };
+  }, [accessToken]);
+
+
+    const selectPlaylist = (playlistId) => {
+        setSelectedPlaylistId(playlistId);
+        onSelectedPlaylist(playlistId);
+        console.log(`Selected Playlist = ${playlistId}`);
+
+      const fetchPlaylistDetails = () => {
+        fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+
+      })
+      .then(async (res) => {
+        if(res.status === 429) {
+          const retryAfter = res.headers.get("Retry-After") || 5;
+          console.warn(`Rate limited (playlist fectch). Retrying after ${retryAfter}s`);
+            setTimeout(fetchPlaylistDetails, retryAfter * 1000);
+            return null;
+        }
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+        return res.json();
+
+      })
+    .then((data) => {
+      if (data) {
+       setPlaylistObject(data);
+        setTrackItemsInListToUpdate(data.tracks.items || []);
+        setTrackNames((data.tracks.items || []).map(item => item.track.name));
+        const existingTrackUris = data.tracks.items.map(item => item.track.uri);
+        if(onExistingTracksChange) onExistingTracksChange(existingTrackUris);
+        console.log(JSON.stringify(data.tracks.items, null, 2));
+      }
+    })
+    .catch((err) => console.error(`Error fetching playlist`, err));
+    };
+    fetchPlaylistDetails();
+  };
+
+      const handlePlaylistInfo = () => {
+      console.log(`Your playlists ${JSON.stringify(retrievedPlaylists, null, 2)}`);
+      };
+
+{
 
 return (
-    <>
-        <form onSubmit={handleSubmit}>
-            <div className={styles.playlistFinderContainer}>
-                <div className={styles.playlistIdAndTokenId}>
-                    <label htmlFor='PlaylistId'>Playlist Id: </label>
-                    <input name="PlaylistId" id="PlaylistId" value={spotifyPlaylistToFind} type="text" className={styles.playlistFinderIdInput} onChange={handleUserPlaylistInput}></input>
-                   {/* <label htmlFor='TokenId'>Token Id: </label>
-                    <input name="TokenId" id="TokenId" value={spotifyToken} type="text" className={styles.playlistFinderTokenInput} onChange={handleUserTokenInput}></input>*/ }
-                </div>
-                <div className={styles.playlistFinderButtonOnly}>
-                    <button className={styles.playlistFinderButton}>Find My Playlist</button>
-                </div>
-            </div>
-        </form>
-    </>
-)
+<>
+    <div>
+        <h2 onClick={handlePlaylistInfo}>My Playlists</h2>
+        <ul>
+        {retrievedPlaylists.map((playlist) => (
+            <li key={playlist.id} onClick={() => selectPlaylist(playlist.id)}>{playlist.name} : {playlist.id}</li>
+        ))}
+        </ul>
+
+        <div className={styles.tracklistContainer}>
+            <TracklistToUpdate trackNames={trackNames} accessToken={accessToken}/>
+        </div>
 
 
+        
+    </div>
+</>
+);
+  }
 }
 
 export default SpotifyPlaylistFinder;
