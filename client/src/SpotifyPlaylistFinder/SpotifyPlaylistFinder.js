@@ -4,7 +4,7 @@ import { useFormState } from 'react-dom';
 import TracklistToUpdate from '../TracklistToUpdate/TracklistToUpdate.js';
 import { data } from 'browserslist';
 
-function SpotifyPlaylistFinder ({accessToken, onSelectPlaylist}){
+function SpotifyPlaylistFinder ({accessToken, onSelectedPlaylist}){
 
 console.log("SpotifyPlaylistFinder received accessToken:", accessToken);
 
@@ -68,7 +68,7 @@ useEffect(() => {
 
     const selectPlaylist = (playlistId) => {
         setSelectedPlaylistId(playlistId);
-        onSelectPlaylist(playlistId);
+        onSelectedPlaylist(playlistId);
         console.log(`Selected Playlist = ${playlistId}`);
 
       const fetchPlaylistDetails = () => {

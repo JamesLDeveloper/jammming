@@ -10,12 +10,12 @@ function DisplayAndSelectResults({searchResults, playlistId, onSelectTracks}) {
 
 if (!searchResults || !searchResults.tracks) return <div>Please enter a valid song name</div>;
 
-const tracks = (searchResults.tracks.items || [].map((t) => ({
+const tracks = (searchResults?.tracks?.items || []).map((t) => ({
     id: t.id,
     name: t.name || "<unknown>",
     artists: (t.artists || []).map((a) => a.name).join(", "),
     uri: t.uri,
-})));
+}));
 
 const toggleSelect = (track) => {
     setSelected((prev) => {
