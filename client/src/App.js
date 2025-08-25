@@ -20,7 +20,6 @@ const [userProfile, setUserProfile] = useState(null);
 const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
 const [selectedTracks, setSelectedTracks] = useState([]);
 
-
 useEffect (() => {
     const query = new URLSearchParams(window.location.search);
     const tokenFromUrl = query.get("access_token");
@@ -39,17 +38,8 @@ useEffect(() => {
     })
     .then((res) => res.json())
     .then((data) => setUserProfile(data))
- //   .then(() => fetchPlaylists())
     .catch((err) => console.error("Error fetching profile: ", err));
 }, [accessToken]);
-
-/* useEffect(() => {
-      if (accessToken) {
-         toggleSpotifyPlaylistFinder();
-      }
-  }, [accessToken])
-
-*/
 
  const loginRequired = () => {
   if (!accessToken) {
@@ -73,7 +63,6 @@ const logout = () => {
                 localStorage.removeItem("spotify_access_token");
                 setAccessToken("");
                 setUserProfile(null);
-            //    setRetrievedPlaylists([]);
             }}>
                 Logout
         </button>
@@ -124,7 +113,7 @@ const toggleSpotifyPlaylistFinder = () => {
         <div className={styles.playlistUpdaterContainer}>
             <Playlist />
             <SongsToAdd selectedTracks={selectedTracks}/>
-            <SaveToSpotify accessToken={accessToken} playlistId={selectedPlaylistId} tracks={selectedTracks}/>
+            <SaveToSpotify accessToken={accessToken} playlistId={selectedPlaylistId} selectedTracks={selectedTracks}/>
         </div>
       </div>
     </>

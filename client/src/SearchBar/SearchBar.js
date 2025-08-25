@@ -7,11 +7,6 @@ function SearchBar({accessToken, playlistId, onSelectedTracks}){
 
     const [searchBarUserInput, setSearchBarUserInput] = useState("");
     const [searchResults, setSearchResults] = useState(null);
-    const [selectedTracks, setSelectedTracks] = useState([]);
-
-useEffect(() => {
-  if (onSelectedTracks) onSelectedTracks(selectedTracks);
-}, [selectedTracks]);
 
     const handleUserInput = (e) => {
         setSearchBarUserInput(e.target.value);    
@@ -45,7 +40,7 @@ useEffect(() => {
         </div>
         </form>
                   <div className={styles.searchResults}>
-          <DisplayAndSelectResults accessToken={accessToken} searchResults={searchResults} playlistID={playlistId} onSelectedTracks={setSelectedTracks}/>
+          <DisplayAndSelectResults accessToken={accessToken} searchResults={searchResults} playlistID={playlistId} onSelectedTracks={onSelectedTracks}/>
           </div>
           </>
     );
