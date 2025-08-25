@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import styles from './SearchBar.module.css';
-import SearchResults from "../SearchResults/SearchResults";
+import DisplayAndSelectResults from "../DisplayAndSelectResults/DisplayAndSelectResults";
+import SongsToAdd from "../SongsToAdd/SongsToAdd";
 
-function SearchBar({accessToken}){
+function SearchBar({accessToken, playlistId, onSelectedTracks}){
 
     const [searchBarUserInput, setSearchBarUserInput] = useState("");
-    const [searchResults, setSearchResults] = useState("");
+    const [searchResults, setSearchResults] = useState(null);
+    const [selectedTracks, setSelectedTracks] = useState([]);
+
+useEffect(() => {
+  if (onSelectedTracks) onSelectedTracks(selectedTracks);
+}, [selectedTracks]);
 
     const handleUserInput = (e) => {
         setSearchBarUserInput(e.target.value);    
@@ -39,7 +45,7 @@ function SearchBar({accessToken}){
         </div>
         </form>
                   <div className={styles.searchResults}>
-          <SearchResults searchBarUserInput={searchBarUserInput} searchResults={searchResults}/>
+          <DisplayAndSelectResults accessToken={accessToken} searchResults={searchResults} playlistID={playlistId} onSelectTracks={setSelectedTracks}/>
           </div>
           </>
     );

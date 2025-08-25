@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom';
 import SearchBar from './SearchBar/SearchBar.js';
 //import './Playlist/Playlist.js';
 import Playlist from './Playlist/Playlist.js';
-import SearchResults from './SearchResults/SearchResults.js';
+import DisplayAndSelectResults from './DisplayAndSelectResults/DisplayAndSelectResults.js';
 import SaveToSpotify from './SaveToSpotify/SaveToSpotify.js';
 import Tracklist from './Tracklist/Tracklist.js';
 import styles from './App.module.css';
 import SpotifyPlaylistFinder from './SpotifyPlaylistFinder/SpotifyPlaylistFinder.js';
+import SongsToAdd from './SongsToAdd/SongsToAdd.js';
 import FoundPlaylist from './FoundPlaylist/Foundplaylist.js';
 import UserPlaylists from './UserPlaylists/UserPlaylists.js';
 import React, { useState , useEffect}  from 'react';
@@ -16,6 +17,8 @@ function App() {
 
 const [accessToken, setAccessToken] = useState("");
 const [userProfile, setUserProfile] = useState(null);
+const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
+const [selectedTracks, setSelectedTracks] = useState([]);
 
 
 useEffect (() => {
@@ -82,7 +85,7 @@ const toggleSpotifyPlaylistFinder = () => {
   if (accessToken) {
       return (
         <>
-          <SpotifyPlaylistFinder accessToken={accessToken} />
+          <SpotifyPlaylistFinder accessToken={accessToken} onSelectedPlaylist={setSelectedPlaylistId} />
         </>
       )
   }
@@ -113,15 +116,15 @@ const toggleSpotifyPlaylistFinder = () => {
             
         <div className={styles.playlistSearchAndResultsContainer}>
           <div className={styles.searchBarAndButton}>
-            <SearchBar accessToken={accessToken}/>
+            <SearchBar accessToken={accessToken} playlistId={selectedPlaylistId} onSelectedTracks={setSelectedTracks}/>
           </div>
 
         </div> 
         
         <div className={styles.playlistUpdaterContainer}>
             <Playlist />
-            <Tracklist />
-            <SaveToSpotify />
+            <SongsToAdd tracks={selectedTracks}/>
+            <SaveToSpotify accessToken={accessToken} playlistId={selectedPlaylistId} tracks={selectedTracks}/>
         </div>
       </div>
     </>
