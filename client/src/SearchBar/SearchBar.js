@@ -45,7 +45,7 @@ useEffect(() => {
         </div>
         </form>
                   <div className={styles.searchResults}>
-          <DisplayAndSelectResults accessToken={accessToken} searchResults={searchResults} playlistID={playlistId} onSelectTracks={setSelectedTracks}/>
+          <DisplayAndSelectResults accessToken={accessToken} searchResults={searchResults} playlistID={playlistId} onSelectedTracks={setSelectedTracks}/>
           </div>
           </>
     );

@@ -123,7 +123,7 @@ const toggleSpotifyPlaylistFinder = () => {
         
         <div className={styles.playlistUpdaterContainer}>
             <Playlist />
-            <SongsToAdd tracks={selectedTracks}/>
+            <SongsToAdd selectedTracks={selectedTracks}/>
             <SaveToSpotify accessToken={accessToken} playlistId={selectedPlaylistId} tracks={selectedTracks}/>
         </div>
       </div>
