@@ -4,7 +4,7 @@ import { useFormState } from 'react-dom';
 import TracklistToUpdate from '../TracklistToUpdate/TracklistToUpdate.js';
 import { data } from 'browserslist';
 
-function SpotifyPlaylistFinder ({accessToken, onSelectedPlaylist}){
+function SpotifyPlaylistFinder ({accessToken, onSelectedPlaylist, onExistingTracksChange}){
 
 console.log("SpotifyPlaylistFinder received accessToken:", accessToken);
 
@@ -92,6 +92,8 @@ useEffect(() => {
        setPlaylistObject(data);
         setTrackItemsInListToUpdate(data.tracks.items || []);
         setTrackNames((data.tracks.items || []).map(item => item.track.name));
+        const existingTrackUris = data.tracks.items.map(item => item.track.uri);
+        if(onExistingTracksChange) onExistingTracksChange(existingTrackUris);
         console.log(JSON.stringify(data.tracks.items, null, 2));
       }
     })

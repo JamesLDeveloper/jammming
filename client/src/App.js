@@ -19,6 +19,7 @@ const [accessToken, setAccessToken] = useState("");
 const [userProfile, setUserProfile] = useState(null);
 const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
 const [selectedTracks, setSelectedTracks] = useState([]);
+const [existingPlaylistTracks, setExistingPlaylistTracks] = useState([]);
 
 useEffect (() => {
     const query = new URLSearchParams(window.location.search);
@@ -74,7 +75,7 @@ const toggleSpotifyPlaylistFinder = () => {
   if (accessToken) {
       return (
         <>
-          <SpotifyPlaylistFinder accessToken={accessToken} onSelectedPlaylist={setSelectedPlaylistId} />
+          <SpotifyPlaylistFinder accessToken={accessToken} onSelectedPlaylist={setSelectedPlaylistId} onExistingTracksChange={setExistingPlaylistTracks} />
         </>
       )
   }
@@ -113,7 +114,7 @@ const toggleSpotifyPlaylistFinder = () => {
         <div className={styles.playlistUpdaterContainer}>
             <Playlist />
             <SongsToAdd selectedTracks={selectedTracks}/>
-            <SaveToSpotify accessToken={accessToken} playlistId={selectedPlaylistId} selectedTracks={selectedTracks}/>
+            <SaveToSpotify accessToken={accessToken} playlistId={selectedPlaylistId} selectedTracks={selectedTracks} existingTracks={existingPlaylistTracks}/>
         </div>
       </div>
     </>

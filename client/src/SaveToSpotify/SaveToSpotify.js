@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './SaveToSpotify.module.css';
 import { urlAlphabet } from 'nanoid';
 
-function SaveToSpotify({accessToken, playlistId, selectedTracks}){
+function SaveToSpotify({accessToken, playlistId, selectedTracks, existingTracks}){
 
 
 const handleSubmit = async (e) => {
@@ -19,7 +19,9 @@ const handleSubmit = async (e) => {
     }
 
     try {
-        const uris = selectedTracks.map((t) => t.uri);
+        const urisToAdd = selectedTracks.map((t) => t.uri).filter(uri => !existingTracks.includes(uri));
+
+        if(urisToAdd.length === 0) return alert("All selected tracks are already in the playlist");
 
         const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
         method: "POST",
@@ -27,7 +29,7 @@ const handleSubmit = async (e) => {
             Authorization : `Bearer ${accessToken}`,
             "Content-Type" : "application/json",
         },
-        body: JSON.stringify({uris}),
+        body: JSON.stringify({ uris: urisToAdd}),
     });
 
     if(!response.ok) {
