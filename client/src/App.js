@@ -12,14 +12,15 @@ import SongsToAdd from './SongsToAdd/SongsToAdd.js';
 import FoundPlaylist from './FoundPlaylist/Foundplaylist.js';
 import UserPlaylists from './UserPlaylists/UserPlaylists.js';
 import React, { useState , useEffect}  from 'react';
+import TracklistToUpdate from './TracklistToUpdate/TracklistToUpdate.js';
 
 function App() {
 
 const [accessToken, setAccessToken] = useState("");
 const [userProfile, setUserProfile] = useState(null);
 const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
+const [playlistTracks, setPlaylistTracks] = useState([]);
 const [selectedTracks, setSelectedTracks] = useState([]);
-const [existingPlaylistTracks, setExistingPlaylistTracks] = useState([]);
 
 useEffect (() => {
     const query = new URLSearchParams(window.location.search);
@@ -30,17 +31,6 @@ useEffect (() => {
         window.history.replaceState(null, "", window.location.pathname);
     }
 }, []);
-
-useEffect(() => {
-    if(!accessToken) return;
-
-    fetch("https://api.spotify.com/v1/me", {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    })
-    .then((res) => res.json())
-    .then((data) => setUserProfile(data))
-    .catch((err) => console.error("Error fetching profile: ", err));
-}, [accessToken]);
 
  const loginRequired = () => {
   if (!accessToken) {
@@ -75,12 +65,17 @@ const toggleSpotifyPlaylistFinder = () => {
   if (accessToken) {
       return (
         <>
-          <SpotifyPlaylistFinder accessToken={accessToken} onSelectedPlaylist={setSelectedPlaylistId} onExistingTracksChange={setExistingPlaylistTracks} />
+          <SpotifyPlaylistFinder
+          accessToken={accessToken}
+          onSelectedPlaylist={setSelectedPlaylistId}
+          onTracksFetched={setPlaylistTracks}
+          />
+
+          <TracklistToUpdate trackNames={playlistTracks.map(track => track.name)} />
         </>
       )
   }
 }
-
 
   return (
     <>
@@ -114,7 +109,7 @@ const toggleSpotifyPlaylistFinder = () => {
         <div className={styles.playlistUpdaterContainer}>
             <Playlist />
             <SongsToAdd selectedTracks={selectedTracks} onRemoveTrack={(uri) => setSelectedTracks(prev => prev.filter(t => t.uri !== uri))}/>
-            <SaveToSpotify accessToken={accessToken} playlistId={selectedPlaylistId} selectedTracks={selectedTracks} existingTracks={existingPlaylistTracks}/>
+            <SaveToSpotify accessToken={accessToken} playlistId={selectedPlaylistId} selectedTracks={selectedTracks} existingTracks={playlistTracks.map(t => t.uri)} onTracksUpdated={setPlaylistTracks}/>
         </div>
       </div>
     </>
