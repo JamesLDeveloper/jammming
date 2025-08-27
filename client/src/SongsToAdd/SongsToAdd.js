@@ -1,7 +1,11 @@
 import React from 'react';
 import styles from './SongsToAdd.module.css';
 
-function SongsToAdd({selectedTracks}){
+function SongsToAdd({selectedTracks, onRemoveTrack}){
+
+    const handleRemove = (uri) => {
+        if (onRemoveTrack) onRemoveTrack(uri);
+    };
     
     if (!selectedTracks || selectedTracks.length === 0) {
         return (
@@ -17,7 +21,7 @@ function SongsToAdd({selectedTracks}){
             <>
             <ul>{selectedTracks.map((track) => (
                 <li key={track.uri} style={{marginBottom: 8}}>
-                    <strong>{track.name} - {track.artists}</strong>
+                    <strong>{track.name} - {track.artists}</strong><button type="button" onClick={() => handleRemove(track.uri)}>Remove</button>
                 </li>
             ) )}
             </ul>
