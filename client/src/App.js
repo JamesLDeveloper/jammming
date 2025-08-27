@@ -22,14 +22,7 @@ const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
 const [playlistTracks, setPlaylistTracks] = useState([]);
 const [selectedTracks, setSelectedTracks] = useState([]);
 const [playListName, setPlaylistName] = useState("");
-const [refreshPlaylistsTrigger, setRefreshPlaylistsTrigger] = useState(0);
 const [refreshTrigger, setRefreshTrigger] = useState(0);
-
-const handleRefreshPlaylists = () => {
-  setRefreshTrigger(prev => prev + 1);
-}
-
-const triggerRefreshPlaylists = () => setRefreshPlaylistsTrigger(prev => prev + 1);
 
 useEffect (() => {
     const query = new URLSearchParams(window.location.search);
@@ -40,6 +33,10 @@ useEffect (() => {
         window.history.replaceState(null, "", window.location.pathname);
     }
 }, []);
+
+const handleRefreshPlaylists = () => {
+  setRefreshTrigger(prev => prev + 1);
+}
 
  const loginRequired = () => {
   if (!accessToken) {
@@ -63,6 +60,9 @@ const logout = () => {
                 localStorage.removeItem("spotify_access_token");
                 setAccessToken("");
                 setUserProfile(null);
+                setPlaylistTracks([]);
+                setSelectedPlaylistId(null);
+                setPlaylistName("");
             }}>
                 Logout
         </button>
@@ -81,6 +81,7 @@ const toggleSpotifyPlaylistFinder = () => {
           onPlaylistName={setPlaylistName}
           playlistName={playListName}
           refreshTrigger={refreshTrigger}
+          onRefreshPlaylists={handleRefreshPlaylists}
           />
 
           <TracklistToUpdate trackNames={playlistTracks.map(track => track.name)} />
@@ -113,7 +114,7 @@ const toggleSpotifyPlaylistFinder = () => {
             
         <div className={styles.playlistSearchAndResultsContainer}>
           <div className={styles.searchBarAndButton}>
-            <SearchBar accessToken={accessToken} playlistId={selectedPlaylistId} selectedTracks={selectedTracks} onSelectedTracks={setSelectedTracks} playlistName={playListName} onPlaylistName={setPlaylistName} onRefreshPlaylists={handleRefreshPlaylists}/>
+            <SearchBar accessToken={accessToken} playlistId={selectedPlaylistId} selectedTracks={selectedTracks} onSelectedTracks={setSelectedTracks} playlistName={playListName}/>
           </div>
 
         </div> 
