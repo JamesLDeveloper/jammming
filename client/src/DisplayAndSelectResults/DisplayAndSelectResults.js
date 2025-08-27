@@ -26,9 +26,11 @@ const toggleSelect = (track) => {
         onSelectedTracks(updated);
     };
 
+    console.log("[DisplayAndSelectResults] playlistName prop:", playlistName);
+
     return (
         <div>
-            <h1 className={styles.SearchResultsHeading}>Search Results {playlistId ? `for Playlist ${playlistId} : ${playlistName}` : ""}</h1>
+            <h1 className={styles.SearchResultsHeading}>Search Results {playlistId ? `for Playlist: ${playlistName}` : ""}</h1>
             <ul className={styles.SearchResultItems}>
                 {tracks.map((track) => (
                     <li key={track.uri} style={{ marginBottom: 8 }}>

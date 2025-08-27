@@ -21,8 +21,10 @@ const [userProfile, setUserProfile] = useState(null);
 const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
 const [playlistTracks, setPlaylistTracks] = useState([]);
 const [selectedTracks, setSelectedTracks] = useState([]);
-const [playListName, setPlaylistName] = useState("");
+const [playlistName, setPlaylistName] = useState("");
 const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [refreshPlaylistsTrigger, setRefreshPlaylistsTrigger] = useState(0);
+const [playlists, setPlaylists] = useState([]);
 
 useEffect (() => {
     const query = new URLSearchParams(window.location.search);
@@ -33,6 +35,8 @@ useEffect (() => {
         window.history.replaceState(null, "", window.location.pathname);
     }
 }, []);
+
+const triggerRefreshPlaylists = () => setRefreshPlaylistsTrigger(prev => prev + 1);
 
 const handleRefreshPlaylists = () => {
   setRefreshTrigger(prev => prev + 1);
@@ -70,6 +74,57 @@ const logout = () => {
  }
 }
 
+  const onRefreshPlaylists = async () => {
+    if (!accessToken){
+      console.log("[onRefreshPlaylists] no accessToken, skipping");
+      return;
+    } 
+
+    if (!selectedPlaylistId) {
+      console.log("[onRefreshPlaylists] no selectedPlaylistId, skipping");
+      return;
+    }
+
+    const start = performance.now();
+    console.log(`[onRefreshPlaylists] fetching playlist ${selectedPlaylistId} at ${new Date().toISOString()}`);
+
+  try {
+    const res = await fetch(
+      `https://api.spotify.com/v1/playlists/${encodeURIComponent(selectedPlaylistId)}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+
+
+        if (res.status === 429) {
+        const retryAfter = parseInt(res.headers.get("Retry-After") || "5", 10);
+        console.warn(`[onRefreshPlaylists] rate limited, retrying after ${retryAfter}s`);
+        await new Promise(r => setTimeout(r, retryAfter * 1000));
+        return onRefreshPlaylists();
+      }
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        console.error(`[onRefreshPlaylists] spotify error ${res.status} ${res.statusText}`, text);
+        return;
+      }
+
+      const json = await res.json();
+      const took = (performance.now() - start).toFixed(1);
+      console.log(`[onRefreshPlaylists] playlist fetched in ${took}ms -- name returned: "${json.name}"`);
+
+      if(json.name) {
+      setPlaylistName(json.name || []);
+      }
+      const tracks = (json.tracks?.items || []).map(item => item.track);
+      setPlaylistTracks(tracks)
+
+    } catch (err) {
+      console.error("[onRefreshPlaylists] fetch failed:", err);
+    }
+  };
+
 const toggleSpotifyPlaylistFinder = () => {
   if (accessToken) {
       return (
@@ -79,9 +134,9 @@ const toggleSpotifyPlaylistFinder = () => {
           onSelectedPlaylist={setSelectedPlaylistId}
           onTracksFetched={setPlaylistTracks}
           onPlaylistName={setPlaylistName}
-          playlistName={playListName}
+          playlistName={playlistName}
           refreshTrigger={refreshTrigger}
-          onRefreshPlaylists={handleRefreshPlaylists}
+          onRefreshPlaylists={onRefreshPlaylists}
           />
 
           <TracklistToUpdate trackNames={playlistTracks.map(track => track.name)} />
@@ -114,7 +169,7 @@ const toggleSpotifyPlaylistFinder = () => {
             
         <div className={styles.playlistSearchAndResultsContainer}>
           <div className={styles.searchBarAndButton}>
-            <SearchBar accessToken={accessToken} playlistId={selectedPlaylistId} selectedTracks={selectedTracks} onSelectedTracks={setSelectedTracks} playlistName={playListName}/>
+            <SearchBar accessToken={accessToken} playlistId={selectedPlaylistId} selectedTracks={selectedTracks} onSelectedTracks={setSelectedTracks} playlistName={playlistName} onRefreshPlaylists={handleRefreshPlaylists}/>
           </div>
 
         </div> 

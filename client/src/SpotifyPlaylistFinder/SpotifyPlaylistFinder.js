@@ -19,6 +19,7 @@ function SpotifyPlaylistFinder({
       setPlaylists([]);
       return;
     }
+
     const cancelledRef = { cancelled: false };
 
     const fetchPlaylists = async () => {
@@ -46,6 +47,11 @@ function SpotifyPlaylistFinder({
     fetchPlaylists();
     return () => { cancelledRef.cancelled = true; };
   }, [accessToken, refreshTrigger]);
+
+  useEffect(() => {
+  console.log("[SpotifyPlaylistFinder] playlistName changed:", playlistName);
+}, [playlistName]);
+
 
   const selectPlaylist = (playlist) => {
     const playlistId = playlist.id;
@@ -84,7 +90,10 @@ function SpotifyPlaylistFinder({
 
   const handleRenameSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedPlaylistId) return;
+    if (!renameInput || !selectedPlaylistId) return;
+
+    console.log("[Rename] Starting rename request at", new Date().toISOString());
+      const start = performance.now();
 
     try {
       const res = await fetch(`https://api.spotify.com/v1/playlists/${selectedPlaylistId}`, {
@@ -96,9 +105,36 @@ function SpotifyPlaylistFinder({
         body: JSON.stringify({ name: renameInput }),
       });
 
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      onPlaylistName(renameInput);
+      const afterPut = performance.now();
+      console.log(`[Rename] PUT request finished in ${(afterPut - start).toFixed(2)}ms`);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`${res.status} ${errorText}`);
+      }
+        
+      console.log("[Rename] Optimistically updating UI with:", renameInput);
+      if (onPlaylistName) onPlaylistName(renameInput);
+
+      
+
+
+
+      /*if (onRefreshPlaylists) {
+      const refreshStart = performance.now();
+      await onRefreshPlaylists();
+      const refreshEnd = performance.now();
+      console.log(`[Rename] Refresh playlists took ${(refreshEnd - refreshStart).toFixed(2)}ms`);
+    }*/
+
+    setTimeout(() => {
+      console.log("[Rename] Triggering delayed refresh...");
       if (onRefreshPlaylists) onRefreshPlaylists();
+    }, 1200);
+
+      const end = performance.now();
+      console.log(`[Rename] Total flow took ${(end - start).toFixed(2)}ms`);
+    
       alert(`Playlist renamed to ${renameInput}`);
     } catch (err) {
       console.error(err);
