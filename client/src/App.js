@@ -21,6 +21,15 @@ const [userProfile, setUserProfile] = useState(null);
 const [selectedPlaylistId, setSelectedPlaylistId] = useState(null);
 const [playlistTracks, setPlaylistTracks] = useState([]);
 const [selectedTracks, setSelectedTracks] = useState([]);
+const [playListName, setPlaylistName] = useState("");
+const [refreshPlaylistsTrigger, setRefreshPlaylistsTrigger] = useState(0);
+const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+const handleRefreshPlaylists = () => {
+  setRefreshTrigger(prev => prev + 1);
+}
+
+const triggerRefreshPlaylists = () => setRefreshPlaylistsTrigger(prev => prev + 1);
 
 useEffect (() => {
     const query = new URLSearchParams(window.location.search);
@@ -69,6 +78,9 @@ const toggleSpotifyPlaylistFinder = () => {
           accessToken={accessToken}
           onSelectedPlaylist={setSelectedPlaylistId}
           onTracksFetched={setPlaylistTracks}
+          onPlaylistName={setPlaylistName}
+          playlistName={playListName}
+          refreshTrigger={refreshTrigger}
           />
 
           <TracklistToUpdate trackNames={playlistTracks.map(track => track.name)} />
@@ -101,7 +113,7 @@ const toggleSpotifyPlaylistFinder = () => {
             
         <div className={styles.playlistSearchAndResultsContainer}>
           <div className={styles.searchBarAndButton}>
-            <SearchBar accessToken={accessToken} playlistId={selectedPlaylistId} selectedTracks={selectedTracks} onSelectedTracks={setSelectedTracks}/>
+            <SearchBar accessToken={accessToken} playlistId={selectedPlaylistId} selectedTracks={selectedTracks} onSelectedTracks={setSelectedTracks} playlistName={playListName} onPlaylistName={setPlaylistName} onRefreshPlaylists={handleRefreshPlaylists}/>
           </div>
 
         </div> 

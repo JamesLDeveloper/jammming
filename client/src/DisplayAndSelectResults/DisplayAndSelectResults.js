@@ -4,7 +4,9 @@ import SaveToSpotify from "../SaveToSpotify/SaveToSpotify.js";
 import SongsToAdd from "../SongsToAdd/SongsToAdd.js";
 import { select } from "underscore";
 
-function DisplayAndSelectResults({accessToken, searchResults, playlistId, selectedTracks, onSelectedTracks}) {
+function DisplayAndSelectResults({accessToken, searchResults, playlistId, selectedTracks, onSelectedTracks, playlistName, onPlaylistName}) {
+
+const [renamePlaylistUserInput, setRenamePlaylistUserInput] = useState("");
 
 if (!searchResults || !searchResults.tracks) return <div>Please enter a valid song name</div>;
 
@@ -14,6 +16,7 @@ const tracks = (searchResults?.tracks?.items || []).map((t) => ({
     artists: (t.artists || []).map((a) => a.name).join(", "),
     uri: t.uri,
 }));
+
 
 const toggleSelect = (track) => {
 
@@ -25,7 +28,7 @@ const toggleSelect = (track) => {
 
     return (
         <div>
-            <h1 className={styles.SearchResultsHeading}>Search Results {playlistId ? `for Playlist ${playlistId}` : ""}</h1>
+            <h1 className={styles.SearchResultsHeading}>Search Results {playlistId ? `for Playlist ${playlistId} : ${playlistName}` : ""}</h1>
             <ul className={styles.SearchResultItems}>
                 {tracks.map((track) => (
                     <li key={track.uri} style={{ marginBottom: 8 }}>

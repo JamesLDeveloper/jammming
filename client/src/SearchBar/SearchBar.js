@@ -3,7 +3,7 @@ import styles from './SearchBar.module.css';
 import DisplayAndSelectResults from "../DisplayAndSelectResults/DisplayAndSelectResults";
 import SongsToAdd from "../SongsToAdd/SongsToAdd";
 
-function SearchBar({accessToken, playlistId, selectedTracks, onSelectedTracks}){
+function SearchBar({accessToken, playlistId, selectedTracks, onSelectedTracks, playlistName, onPlaylistName, onRefreshPlaylists}){
 
     const [searchBarUserInput, setSearchBarUserInput] = useState("");
     const [searchResults, setSearchResults] = useState(null);
@@ -40,7 +40,7 @@ function SearchBar({accessToken, playlistId, selectedTracks, onSelectedTracks}){
         </div>
         </form>
                   <div className={styles.searchResults}>
-          <DisplayAndSelectResults accessToken={accessToken} searchResults={searchResults} playlistId={playlistId} selectedTracks={selectedTracks} onSelectedTracks={onSelectedTracks}/>
+          <DisplayAndSelectResults accessToken={accessToken} searchResults={searchResults} playlistId={playlistId} selectedTracks={selectedTracks} onSelectedTracks={onSelectedTracks} playlistName={playlistName} onPlaylistName={onPlaylistName} onRefreshPlaylists={onRefreshPlaylists}/>
           </div>
           </>
     );

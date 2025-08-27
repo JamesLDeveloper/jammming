@@ -4,9 +4,11 @@ import { useFormState } from 'react-dom';
 import TracklistToUpdate from '../TracklistToUpdate/TracklistToUpdate.js';
 import { data } from 'browserslist';
 
-function SpotifyPlaylistFinder ({accessToken, onSelectedPlaylist, onTracksFetched}) {
+function SpotifyPlaylistFinder ({accessToken, onSelectedPlaylist, onTracksFetched, playlistName, onPlaylistName, refreshTrigger, onRefreshPlaylists}) {
 
 console.log("SpotifyPlaylistFinder received accessToken:", accessToken);
+
+const [renamePlaylistUserInput, setRenamePlaylistUserInput] = useState("");
 
 const [userProfile, setUserProfile] = useState(null);
 //const [retrievedPlaylists, setRetrievedPlaylists] = useState([]);
@@ -52,6 +54,41 @@ const fetchPlaylists = (cancelledRef) => {
   });
   };
 
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const newName = renamePlaylistUserInput;
+
+    try {
+                const response = await fetch(`https://api.spotify.com/v1/playlists/${onSelectedPlaylist.id}`, {
+        method: "PUT",
+        headers: { 
+            Authorization : `Bearer ${accessToken}`,
+            "Content-Type" : "application/json",
+        },
+        body: JSON.stringify({ name: newName }),
+    });
+            if(!response.ok) {
+        throw new Error(`Spotify API error: ${response.status} ${response.statusText}`);
+    }
+
+    onPlaylistName(newName);
+
+    if (onRefreshPlaylists) onRefreshPlaylists();
+
+    console.log(`Playlist successfully renamed to ${newName}`);
+
+    } catch (err) {
+        console.error("Error saving new name to Spotify:", err);
+        alert("Failed to add tracks to playlist. Check console for details.");
+    }
+};
+
+const handleUserInput = (e) => {
+    setRenamePlaylistUserInput(e.target.value);
+}
+
+
 useEffect(() => {
   if (!accessToken) {
     setPlaylists([]);  // clear playlists on logout
@@ -63,11 +100,13 @@ useEffect(() => {
     cancelledRef.cancelled = true;
     clearTimeout(timer);
   };
-  }, [accessToken]);
+  }, [accessToken, refreshTrigger]);
 
 
-    const selectPlaylist = (playlistId) => {
+    const selectPlaylist = (playlist) => {
+        const playlistId=playlist.id;
         onSelectedPlaylist(playlistId);
+        onPlaylistName(playlist.name);
         console.log(`Selected Playlist = ${playlistId}`);
 
         const cancelRef = {cancelled : false};
@@ -116,14 +155,21 @@ useEffect(() => {
       console.log(`Your playlists ${JSON.stringify(playlists, null, 2)}`);
       };
 
-
 return (
 <>
     <div>
         <h2 onClick={handlePlaylistInfo}>My Playlists</h2>
         <ul>
         {playlists.map((pl) => (
-            <li key={pl.id} onClick={() => selectPlaylist(pl.id)}>{pl.name} : {pl.id}</li>
+          <>
+            <li key={pl.id} onClick={() => selectPlaylist(pl)}>{pl.name}</li>
+            <li><h1>Rename Playlist: {playlistName}</h1>
+            <form onSubmit={handleSubmit}>
+                <input value={renamePlaylistUserInput} type="text" onChange={handleUserInput}></input>
+                <button>Rename playlist</button>
+            </form>
+            </li>
+            </>
         ))}
         </ul>
     </div>
