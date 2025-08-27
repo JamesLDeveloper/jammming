@@ -70,7 +70,9 @@ useEffect(() => {
         onSelectedPlaylist(playlistId);
         console.log(`Selected Playlist = ${playlistId}`);
 
-      const fetchPlaylistDetails = (cancelledRef) => {
+        const cancelRef = {cancelled : false};
+
+      const fetchPlaylistDetails = () => {
         fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
 
@@ -80,7 +82,7 @@ useEffect(() => {
           const retryAfter = parseInt(res.headers.get("Retry-After") || 5);
           console.warn(`Rate limited (playlist fectch). Retrying after ${retryAfter}s`);
             setTimeout(() => {
-              if (!cancelledRef.cancelled) fetchPlaylistDetails(cancelledRef)
+              if (!cancelRef.cancelled) fetchPlaylistDetails()
             }, retryAfter * 1000);
             return null;
         }
@@ -99,13 +101,13 @@ useEffect(() => {
       }
     })*/
     .then(data => {
-      if (data && !cancelledRef.cancelled) {
+      if (data && !cancelRef.cancelled) {
         const tracks = data.tracks.items.map(item => item.track);
         onTracksFetched(tracks);
       }
     })
 
-    .catch((err) => {if (!cancelledRef.cancelled) console.error(`Error fetching playlist`, err); });
+    .catch((err) => {if (!cancelRef.cancelled) console.error(`Error fetching playlist`, err); });
     };
     fetchPlaylistDetails();
   };
